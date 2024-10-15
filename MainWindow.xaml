@@ -1,0 +1,188 @@
+﻿<Window x:Class="OOSU2_Lab3_2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OOSU2_Lab3_2"
+        mc:Ignorable="d"
+        Title="Weather Forecast" Height="650" Width="1000">
+    <Window.Resources>
+        <Style TargetType="Window">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Foreground" Value="#37474F" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style TargetType="Grid">
+            <Setter Property="Background" Value="#4FC3F7" />
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#37474F" />
+        </Style>
+        <local:WeatherToColorConverter x:Key="colorConvert" />
+    </Window.Resources>
+    <Grid>
+        <!-- Grid -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1.5*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="4*"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <!-- Menu -->
+        <DockPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open"/>
+                    <MenuItem Header="_Save"/>
+                    <MenuItem Header="_Close"/>
+                </MenuItem>
+                <MenuItem Header="_Edit">
+                    <MenuItem Header="_Copy"/>
+                    <MenuItem Header="_Paste"/>
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_About"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel></StackPanel>
+        </DockPanel>
+        
+        <!-- Header -->
+        <Border BorderBrush="#E1F5FE" BorderThickness="0 0 0 1" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Margin="20">
+            <TextBlock FontSize="72" FontWeight="Black" Foreground="#E1F5FE" Margin="20 0" Text="Weather Forecast"></TextBlock>
+        </Border>
+        
+        <!-- Body Left Column -->
+        <StackPanel Grid.Column="0" Grid.Row="3" Margin="20 10">
+            <StackPanel Background="#039BE5">
+                <TextBlock FontSize="14" FontWeight="Bold" Foreground="#E1F5FE"  Padding="10">Dummy Options</TextBlock>
+            </StackPanel>
+            <StackPanel Background="#E1F5FE"  Margin="0 0 0 20">
+                <StackPanel Margin="15">
+                    <StackPanel>
+                        <RadioButton x:Name="radioMethodA" Content="Method A" Margin="5"></RadioButton>
+                        <RadioButton x:Name="radioMethodB" Content="Method B" Margin="5"></RadioButton>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <Label x:Name="predictionNumber" Content="{Binding ElementName=sliderAmount,Path=Value}" FontFamily="Segoe UI" FontSize="72" FontWeight="Black" Foreground="#039BE5" HorizontalAlignment="Center"/>
+                <Label x:Name="predictionText" Content="Prediction Interval" Foreground="#E1F5FE" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"></Label>
+                <Slider x:Name="sliderAmount" Minimum="1" Maximum="30" IsSnapToTickEnabled="True" Margin="20" TickFrequency="1" Value="15" />
+                <Button x:Name="button" Background="#E1F5FE" BorderThickness="0" Content="Check" Click="CheckWeather" FontSize="14" FontWeight="Medium" Foreground="#039BE5" Height="40" Margin="20 0" MaxWidth="150" Width="Auto"/>
+            </StackPanel>
+        </StackPanel>
+        
+        <!-- Body Middle Column -->
+        <ListBox x:Name="listBox" Background="#E1F5FE" BorderThickness="0"  FontSize="14" FontWeight="Medium" Foreground="#37474F" Grid.Column="1" Grid.Row="3" HorizontalContentAlignment="Stretch" ItemsSource="{Binding}" Margin="0 10" ScrollViewer.CanContentScroll="False">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid HorizontalAlignment="Stretch" Margin="0 15"  VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Ellipse Fill="{Binding Path=WeatherType, Converter={StaticResource colorConvert}}" Grid.Column="0" Height="15" Width="15"/>
+                        <TextBlock Grid.Column="1" Text="{Binding TimeLine}" HorizontalAlignment="Center"></TextBlock>
+                        <TextBlock Grid.Column="2" Text="{Binding Region}"></TextBlock>
+                        <TextBlock Grid.Column="3" Text="{Binding WeatherType}"></TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Body Right Column -->
+        <StackPanel Grid.Column="2" Grid.Row="3" Margin="20 10 20 20">
+            <!-- Today -->
+            <StackPanel Background="#039BE5">
+                <TextBlock FontSize="14" FontWeight="Bold" Foreground="#E1F5FE"  Padding="10">Today</TextBlock>
+            </StackPanel>
+            <StackPanel Background="#E1F5FE"  Margin="0 0 0 20">
+                <StackPanel Margin="15">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Degrees:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Degrees}"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Humidity:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Humidity}"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Wind:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Wind}"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Wind Direction:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.WindDirection}"></TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+            <!-- Tomorrow -->
+            <StackPanel Background="#039BE5">
+                <TextBlock FontSize="14" FontWeight="Bold" Foreground="#E1F5FE"  Padding="10">Tomorrow</TextBlock>
+            </StackPanel>
+            <StackPanel Background="#E1F5FE"  Margin="0 0 0 20">
+                <StackPanel Margin="15">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Degrees:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[0].Degrees}"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Humidity:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[0].Humidity}"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Wind:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[0].Wind}"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Wind Direction:&#160;</TextBlock>
+                        <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[0].WindDirection}"></TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+            <!-- In Four Days -->
+            <StackPanel>
+                <StackPanel Background="#039BE5">
+                    <TextBlock FontSize="14" FontWeight="Bold" Foreground="#E1F5FE"  Padding="10">In Four Days</TextBlock>
+                </StackPanel>
+                <StackPanel Background="#E1F5FE"  Margin="0 0 0 20">
+                    <StackPanel Margin="15">
+                        <StackPanel Orientation="Horizontal">
+                    <TextBlock>Degrees:&#160;</TextBlock>
+                    <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[1].Degrees}"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Humidity:&#160;</TextBlock>
+                    <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[1].Humidity}"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Wind:&#160;</TextBlock>
+                    <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[1].Wind}"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Wind Direction:&#160;</TextBlock>
+                    <TextBlock Text="{Binding ElementName=listBox,Path=SelectedItem.Predictions[1].WindDirection}"></TextBlock>
+                </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+                </StackPanel>
+        </StackPanel>
+    </Grid>
+    
+    <!-- Create resources add them as necessary during your work-->
+    <!-- Start WindowResource-->
+    <!-- Suggested key: brushPainter, bind to class “predictionBrushes.CS”-->
+    <!-- Add a data template resource-->
+    <!-- start data template-->
+    <!-- Start WindowResource-->
+    <!-- Create all the controls you need-->
+    <!-- Bind controls accordingly to generate and view the necessary data-->
+</Window>
